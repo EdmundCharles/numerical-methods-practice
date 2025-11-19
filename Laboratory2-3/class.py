@@ -1,5 +1,5 @@
 import numpy as np
-from Lab2 import GEM_MOD
+from GEM import GEM_MOD
 import scipy.linalg as sc
 #Code from class 09.10.25
 #In lab2 n shall not be less than 10
