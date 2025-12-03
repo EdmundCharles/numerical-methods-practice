@@ -1,12 +1,23 @@
 import numpy as np
 
-def matr_spectrum(n,lmin,lmax):
-    l = np.linspace(lmin, lmax, n)
+def matr_spectrum(spectrum = None):
+    l = spectrum
+    n = len(spectrum)
     d = np.diag(l)
     q = np.linalg.qr(np.random.rand(n, n)).Q
     a = np.matmul(np.matmul(q, d), np.linalg.matrix_transpose(q))
     return a
-
+def matr_sep(n,sep):
+    l = 1
+    step = abs(l - l*(1+sep))
+    spectrum = np.zeros(n)
+    spectrum[0] = l
+    # spectrum[1] = l + l*sep
+    for i in range(1,n):
+        l += step
+        spectrum[i] = l
+    matrix = matr_spectrum(spectrum)
+    return matrix
 def LU_factorization(A):
     n = len(A)
     lu = np.zeros((n,n))
@@ -48,4 +59,3 @@ def tr(A):
     for i in range(len(A)):
         tr += A[i,i]
     return tr
-

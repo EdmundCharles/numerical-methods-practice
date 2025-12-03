@@ -1,9 +1,9 @@
 import numpy as np
-from helping_functions import matr_spectrum, LU_solve, LU_factorization
+from aux_functions import matr_sep, LU_solve, LU_factorization
 
 
 
-def Inverse_iterations(A,eps,max_iter = 1000):
+def INVIT(A,eps,max_iter = 100000):
     #Initial variables
     n = len(A)
     lu = LU_factorization(A)
@@ -24,11 +24,16 @@ def Inverse_iterations(A,eps,max_iter = 1000):
         y_norm = np.sqrt(s)
         x = y/y_norm
         #Step 5: convergence test
-        if abs(t/s - l) < eps:
+        if np.linalg.norm(A@x - t/s*x)/np.linalg.norm(x) < eps:
             break
         l = t/s
-    return l , x , counter
+    return l ,counter
 
 
-A = matr_spectrum(3,100,10000)
-print(Inverse_iterations(A,1e-3))
+A = matr_sep(3,1e-6)
+l,i = INVIT(A,1e-7)
+
+print(l,i)
+print(l-1)
+
+
