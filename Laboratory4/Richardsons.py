@@ -6,14 +6,34 @@ def estimate_spectrum(A):
 def get_alphas(A,m):
     lowr , uppr = estimate_spectrum(A) 
     alphas = [0]*m
-    for k in range(m):
+    for k in range(1,m+1):
         t = np.cos(np.pi*(2*k-1)/(2*m))
         l = (lowr+uppr)/2 + (uppr-lowr)/2*t
-        alphas[k] = 1/l
-    alphas.sort(reverse = True, key= lambda x: abs(x))
+        alphas[k-1] = 1/l
+    # alphas.sort(reverse = True, key= lambda x: abs(x))
+    alphas = sorter(alphas)
     return alphas
-
-
+def sorter(coefficients):
+    n = len(coefficients)
+    if (n & (n - 1)) != 0 or n < 1:
+        raise ValueError("n must be a power of 2")
+    
+    if n == 1:
+        return coefficients
+    
+    permutation = [1, 2]
+    current_size = 2
+    
+    while current_size < n:
+        next_size = current_size * 2
+        new_permutation = []
+        for j in permutation:
+            new_permutation.append(j)
+            new_permutation.append(next_size + 1 - j)
+        permutation = new_permutation
+        current_size = next_size
+    
+    return [coefficients[j-1] for j in permutation]
 
 
 def richardson(A,b,m=10,eps = 1e-7,max_iter = 1e4):
@@ -61,9 +81,9 @@ def matr_cond(n,cond):
     a = np.matmul(np.matmul(q,d),np.linalg.matrix_transpose(q))
     return a
 
-a = matr_cond(1000,1e4)
-x = np.ones(1000)
+a = matr_cond(100,10)
+x = np.ones(100)
 b = a @ x
-x_num = richardson(a,b,m=20,max_iter=1e5,eps=1e-10)
+x_num = richardson(a,b,m=256,max_iter=1e6,eps=1e-6)
 print('Absolute error=',np.linalg.norm(x-x_num))
 print('Relative Error=', np.linalg.norm(x - x_num)/np.linalg.norm(x))

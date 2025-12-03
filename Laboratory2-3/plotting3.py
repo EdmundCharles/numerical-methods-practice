@@ -18,7 +18,7 @@ def nevyazka_gem(A):
     return error2(A,method=GEM_Py)
 def plot_err_cond_both(n,num):
     eps = 2.2e-16
-    cond = np.logspace(1,9,300)
+    cond = np.logspace(10,13,300)
     err_gem = []
     nev_gem = []
     err_rot = []
@@ -47,7 +47,7 @@ def plot_err_cond_both(n,num):
     plt.show()
 def plot_err_deltaA(n,cond,num):
 
-    epsilons = np.logspace(-2,0,10).tolist()
+    epsilons = np.logspace(-10,-1,100).tolist()
     a = matr_cond(n,cond)
     errors_gem = []
     errors_rot = []
@@ -78,7 +78,7 @@ def plot_err_deltaA(n,cond,num):
     plt.legend()
     plt.grid(True,alpha = 0.3)
     plt.tight_layout()
-    plt.savefig(r'c:\Users\ilyad\Downloads\Test2'+f'{num}.eps')
+    # plt.savefig(r'c:\Users\ilyad\Downloads\Test2'+f'{num}.eps')
     plt.show()
     
 
@@ -122,4 +122,4 @@ def plot_comp_n(cond):
 # plot_err_cond_both(10,1)
 # plot_err_cond_both(100,2)
 # plot_err_deltaA(10,1e2,1)
-# plot_err_deltaA(100,1e7,2)
+plot_err_deltaA(10,1e12,2)

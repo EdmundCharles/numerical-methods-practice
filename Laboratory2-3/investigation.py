@@ -1,60 +1,94 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-from GEM import GEM_MOD 
-from rotations import rotations
+from GEM import GEM_Py
+from rotations import rotations_py
+from plotting import matr_cond, error
 
-def analyze_rotations():
-    sizes = []
-    times_rotations = []
-    times_gem = []
+# matr = matr_cond(10,1e12)
+# print(error(matr,GEM_Py))
+# print(error(matr, rotations_py))
+
+def test_internal_stability(n, cond):
+    """Тест на внутреннюю устойчивость (к ошибкам округления)"""
     
-    print("Сравнение методов Гивенса и Гаусса:")
-    print("n\tRotations\tGEM_MOD")
-    print("-" * 40)
+    # Создаем плохо обусловленную матрицу
+    A = matr_cond(n, cond)
+    x_true = np.ones(n)
+    b = A @ x_true
     
-    for n in range(100, 1001, 100):
-        A = np.random.rand(n, n)
-        b = np.random.rand(n)
-        
-        # Метод Гивенса
-        start = time.time()
-        rotations(A.copy(), b.copy())
-        time_rot = time.time() - start
-        
-        # Метод Гаусса (ваш)
-        start = time.time()
-        GEM_MOD(A.copy(), b.copy())
-        time_gem = time.time() - start
-        
-        sizes.append(n)
-        times_rotations.append(time_rot)
-        times_gem.append(time_gem)
-        
-        print(f"{n}\t{time_rot:.4f}\t\t{time_gem:.4f}")
+    # Решаем ОДНУ И ТУ ЖЕ систему обоими методами
+    x_gem = GEM_Py(A, b)
+    x_rot = rotations_py(A, b)
     
-    # Анализ сложности
-    def get_exponent(sizes, times):
-        log_n = np.log(sizes)
-        log_t = np.log(times)
-        return np.polyfit(log_n, log_t, 1)[0]
+    # Ошибки относительно ИСТИННОГО решения
+    error_gem = np.linalg.norm(x_gem - x_true) / np.linalg.norm(x_true)
+    error_rot = np.linalg.norm(x_rot - x_true) / np.linalg.norm(x_true)
     
-    exp_rot = get_exponent(sizes, times_rotations)
-    exp_gem = get_exponent(sizes, times_gem)
+    return error_gem, error_rot
+
+def plot_internal_stability():
+    """График ошибок в зависимости от числа обусловленности"""
+    conditions = np.logspace(10, 16, 20)
+    errors_gem = []
+    errors_rot = []
     
-    print(f"\nЭмпирическая сложность:")
-    print(f"Метод Гивенса: O(n^{exp_rot:.2f})")
-    print(f"Метод Гаусса: O(n^{exp_gem:.2f})")
+    for cond in conditions:
+        eg, er = test_internal_stability(5, cond)
+        errors_gem.append(eg)
+        errors_rot.append(er)
     
-    # График
-    plt.figure(figsize=(10, 6))
-    plt.loglog(sizes, times_rotations, 'ro-', label=f'Rotations (O(n^{exp_rot:.2f}))')
-    plt.loglog(sizes, times_gem, 'bo-', label=f'GEM_MOD (O(n^{exp_gem:.2f}))')
-    plt.xlabel('Размерность n')
-    plt.ylabel('Время (сек)')
+    plt.loglog(conditions, errors_gem, 'o-', label='GEM')
+    plt.loglog(conditions, errors_rot, 's-', label='Rotations')
+    plt.xlabel('Число обусловленности κ(A)')
+    plt.ylabel('Относительная ошибка')
     plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.title('Сравнение методов Гивенса и Гаусса')
+    plt.grid(True)
     plt.show()
+def test_extreme_conditions():
 
-analyze_rotations()
+    conditions = [1e10, 1e12, 1e14, 1e16]
+    
+    for cond in conditions:
+        print(f"\nκ(A) = {cond:.1e}")
+        
+
+        n = 5
+        A = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                A[i, j] = 1.0 / (i + j + 1)
+        
+
+        U, s, Vt = np.linalg.svd(A)
+        current_cond = s[0] / s[-1]
+        scale = cond / current_cond
+        A_scaled = A * np.sqrt(scale)
+        
+
+        s_scaled = np.linalg.svd(A_scaled, compute_uv=False)
+        real_cond = s_scaled[0] / s_scaled[-1]
+        print(f"Реальное κ(A): {real_cond:.2e}")
+        
+        x_true = np.ones(n)
+        b = A_scaled @ x_true
+        
+        try:
+            x_gem = GEM_Py(A_scaled.tolist(), b.tolist())
+            x_rot = rotations_py(A_scaled.tolist(), b.tolist())
+            
+            error_gem = np.linalg.norm(x_gem - x_true) / np.linalg.norm(x_true)
+            error_rot = np.linalg.norm(x_rot - x_true) / np.linalg.norm(x_true)
+            
+            print(f"GEM ошибка: {error_gem:.2e}")
+            print(f"Вращения ошибка: {error_rot:.2e}")
+            
+            if error_rot > 0:
+                ratio = error_gem / error_rot
+                print(f"Отношение: {ratio:.2f}")
+                
+        except Exception as e:
+            print(f"Ошибка: {e}")
+# plot_internal_stability()
+
+test_extreme_conditions()
