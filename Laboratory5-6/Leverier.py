@@ -15,3 +15,7 @@ def Leverier(A):
         p[k-1] = s_/k
     return p
 
+
+#The main question here is whether I should implement a sort of real root isolation algorithm (which would be quite cool). 
+# In this case it would be a full APEVV
+

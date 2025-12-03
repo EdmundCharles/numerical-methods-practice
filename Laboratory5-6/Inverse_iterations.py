@@ -30,10 +30,5 @@ def INVIT(A,eps,max_iter = 100000):
     return l ,counter
 
 
-A = matr_sep(3,1e-6)
-l,i = INVIT(A,1e-7)
-
-print(l,i)
-print(l-1)
 
 
