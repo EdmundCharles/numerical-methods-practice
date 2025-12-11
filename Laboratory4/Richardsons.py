@@ -81,9 +81,8 @@ def matr_cond(n,cond):
     a = np.matmul(np.matmul(q,d),np.linalg.matrix_transpose(q))
     return a
 
-a = matr_cond(100,10)
-x = np.ones(100)
-b = a @ x
+# a = matr_cond(100,10)
+a = [[10,1,-4],[4,10,2],[5,-3,10]]
+b = [7,-4,5]
 x_num = richardson(a,b,m=256,max_iter=1e6,eps=1e-6)
-print('Absolute error=',np.linalg.norm(x-x_num))
-print('Relative Error=', np.linalg.norm(x - x_num)/np.linalg.norm(x))
+print(x_num)

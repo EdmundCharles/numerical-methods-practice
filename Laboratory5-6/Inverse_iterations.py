@@ -31,4 +31,7 @@ def INVIT(A,eps,max_iter = 100000):
 
 
 
+A = matr_sep(3,100)
 
+print(A)
+print(INVIT(A,1e-2))

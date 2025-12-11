@@ -66,3 +66,43 @@ def perturb_matrix_random(A, epsilon):
     delta_A = epsilon * np.linalg.norm(A) * (E / np.linalg.norm(E))
     Ac = copy.deepcopy(A)
     return (Ac + delta_A)
+
+
+
+
+
+def getter(spectrum): 
+    n = len(spectrum)
+    A = matr_spectrum(spectrum)
+    Q =  np.random.rand(n,n)
+    Q_inv = np.linalg.inv(Q)
+    B = Q@A@Q_inv
+    # print('Q-----\n',Q,'\n')
+    # print('Q_inverse\n',Q_inv,'\n')
+    # print('B-----\n',B,'\n')
+    return B
+
+def get_mu(a):
+    at = np.matrix_transpose(a)
+
+    w = np.linalg.eig(a).eigenvectors[0]
+    u = np.linalg.eig(at).eigenvectors[0]
+    wnorm = np.linalg.norm(w)
+    unorm = np.linalg.norm(u)
+    dot = np.dot(w,u)
+    mu = (wnorm*unorm)/dot
+    return mu
+# print(get_mu(B))
+
+def get_matr_with_mu(spectrum,desired_mu):
+    mu = 0
+    i = 0
+    while True:
+        i += 1
+        B = getter(spectrum)
+        mu = get_mu(B)
+        if abs(mu - desired_mu) < 100 and mu > desired_mu:
+            break
+    return B,mu
+
+

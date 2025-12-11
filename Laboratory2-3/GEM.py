@@ -52,5 +52,6 @@ def GEM_NP(A, b):
         x[i] = (Ab[i, n] - np.dot(Ab[i, i+1:n], x[i+1:n])) / Ab[i, i]
     
     return x
-
-
+a = [[10,1,-4],[4,10,2],[5,-3,10]]
+b = [7,-4,5]
+print(GEM_Py(a,b))
