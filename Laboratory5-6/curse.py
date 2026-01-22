@@ -42,7 +42,7 @@ def INVIT_demonstrator(A,eps,max_iter = 100000):
         l = t/s
         print(f'\lambda^({counter}) = t^({counter})/s^({counter})')
         #Step 5: convergence test
-        err = np.linalg.norm(A@x - t/s*x)/np.linalg.norm(x)
+        err = np.linalg.norm(A@x - l*x)/np.linalg.norm(x)
         print('Проверка сходимости\n')
         if err < eps:
             print(f'||A*x^({counter}) - \lambda^({counter})*x||/||x^({counter}) = {err} < {eps}')

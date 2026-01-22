@@ -62,7 +62,7 @@ def tr(A):
 
 def perturb_matrix_random(A, epsilon):
     """Вносит случайное возмущение с уровнем epsilon"""
-    E = np.random.randn(len(A),len(A))  
+    E = np.random.randn(len(A),len(A))  # Случайная матрица
     delta_A = epsilon * np.linalg.norm(A) * (E / np.linalg.norm(E))
     Ac = copy.deepcopy(A)
     return (Ac + delta_A)

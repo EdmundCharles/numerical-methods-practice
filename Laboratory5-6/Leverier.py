@@ -1,6 +1,8 @@
 import numpy as np
 from aux_functions import tr, matr_spectrum
-def Leverier(A):
+
+
+def Leverier_legacy(A):
     n = len(A)
     p = np.zeros(n)
     first = [-1]
@@ -14,6 +16,27 @@ def Leverier(A):
         p[k-1] = s_/k
     return np.concatenate((first,p))
 
+
+def Leverier(A):
+    n = len(A)
+    p = np.zeros(n)
+    first = np.array([-1]) 
+    s = np.zeros(n)
+    
+    B = np.eye(n)
+    
+    for k in range(1, n + 1):
+
+        B = np.dot(B, A) 
+        
+        s[k-1] = np.trace(B) 
+        
+        s_ = s[k-1]
+        for i in range(1, k):
+            s_ -= p[i-1] * s[k-i-1]
+        p[k-1] = s_ / k
+        
+    return np.concatenate((first, p))
 def bisection_method(interval:tuple,eps,f,max_iter= 1000):
         a,b = interval[0],interval[1]
         c = (a+b)/2
@@ -30,16 +53,57 @@ def bisection_method(interval:tuple,eps,f,max_iter= 1000):
         return float((a+b)/2)
 
 
-def get_spectrum(A,eps):
+def get_derivative_coefs(coefs):
+    """Возвращает коэффициенты производной полинома."""
+    n = len(coefs) - 1
+    deriv = []
+    for i in range(n):
+        deriv.append(coefs[i] * (n - i))
+    return np.array(deriv)
+
+
+def find_real_roots_recursive(coefs, bound, eps):
+    """Используется теорема Ролля (почти очевидная) для корней многочлена.
+    Корни самого многочлена лежат между корнями производной, что почти понятно, в случае простых корней, еще и единственность гарантирована. 
+    Сам алгоритм рекурсивно доходит до линейного уравнения (последовательно дифференцируя) и решает его, а дальше обратно вверх идет, 
+    находя последовательно корни производных все меньшего порядка"""
+    def polynomial(x):
+        return sum(coefs[len(coefs)-1-i]*x**(i) for i in range(len(coefs)))
+    f = polynomial
+    #max recursion depth (ax+b=0)
+    if len(coefs) == 2:
+
+        return [-coefs[1] / coefs[0]]
+    
+
+    deriv_coefs = get_derivative_coefs(coefs)
+    
+    extremums = find_real_roots_recursive(deriv_coefs, bound, eps)
+    extremums.sort()
+    
+
+    current_points = [-bound] + extremums + [bound]
+    
+    roots = []
+
+    for i in range(len(current_points) - 1):
+        a, b = current_points[i], current_points[i+1]
+        
+        root = bisection_method((a, b), eps,f)
+        
+        if root is not None:
+            roots.append(root)
+                
+    return roots
+
+def get_spectrum_legacy(A,eps):
     bound = np.linalg.norm(A,ord=np.inf)
     intervalish = (-bound,bound)
     spectrum = []
     coefs = Leverier(A)
-    print(coefs)
     def polynomial(x):
         return sum(coefs[len(coefs)-1-i]*x**(i) for i in range(len(coefs)))
     p = polynomial
-    print(p(0))
     a , b = intervalish[0],intervalish[1]
     toporik = []
     while a < b:
@@ -48,17 +112,17 @@ def get_spectrum(A,eps):
             toporik.append((a,c))
         a += eps
     for interval in toporik:
-        l = bisection_method(interval,1e-6,p)
+        l = bisection_method(interval,1e-9,p)
         spectrum.append(l)
+    
+    # return np.array(spectrum)
     return spectrum
 
+def get_spectrum(A,eps):
+    bound = np.linalg.norm(A,ord=np.inf)*1.1
+    
+    coefs = Leverier(A)
 
-A = matr_spectrum([1,2,3,4,5])
-print(get_spectrum(A,1e-3))
+    spectrum = find_real_roots_recursive(coefs,bound,eps)
+    return spectrum
 
-
-# def intervals(interval,f):
-#     a , b = interval[0],interval[1]
-#     while True:
-#         c = (a + b) /2
-#         if f(a)*f(c) < 0:

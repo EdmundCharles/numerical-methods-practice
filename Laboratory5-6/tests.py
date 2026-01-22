@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from aux_functions import LU_solve, LU_factorization, matr_sep, perturb_matrix_random, matr_spectrum, get_matr_with_mu
+from Leverier import get_spectrum
+from aux_functions import LU_solve, LU_factorization, matr_sep, perturb_matrix_random, matr_spectrum, get_matr_with_mu, get_mu
 
 #The modified INVIT function returning more data, which is going to be used in the following tests.
 def INVIT_demo(A,eps,max_iter = 1e4):
@@ -48,10 +49,12 @@ def accuracy(n):
         errors.append(abs(1 - results[0]))
     plt.plot(epses,errors,'-o',label = 'Experimental data',markersize = '3')
     plt.plot(epses,epses,label = 'Expected bound', linestyle = 'dashed')
-    plt.legend()
-    plt.ylabel('Error')
-    plt.xlabel('$\\varepsilon$')
+    plt.legend(fontsize = 18)
+    plt.ylabel('Error',fontsize = 20)
+    plt.xlabel('$\\varepsilon$',fontsize = 20)
     plt.grid()
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
     plt.loglog()
     plt.show()
 
@@ -71,10 +74,12 @@ def convegrence(n,sep1,sep2,eps = 1e-10):
     plt.plot(iters[0],errors[0],label = f'sep = {sep1}')
     plt.plot(iters[1],errors[1],label = f'sep = {sep2}')
     plt.loglog()
-    plt.xlabel('Iterations')
-    plt.ylabel('Error')
+    plt.xlabel('Iterations',fontsize = 20)
+    plt.ylabel('Error',fontsize = 20)
     plt.grid()
-    plt.legend()
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    plt.legend(fontsize = 18)
     plt.show()
 
 def iterations_dist(n,eps):
@@ -87,10 +92,12 @@ def iterations_dist(n,eps):
         iterations.append(results[2][-1])
     plt.plot(seps,iterations,'-o',label = f'$\\varepsilon = ${eps}')
     plt.loglog()
-    plt.ylabel('Iterations')
-    plt.xlabel('Separation')
+    plt.ylabel('Iterations',fontsize = 20)
+    plt.xlabel('Separation',fontsize = 20)
     plt.grid()
-    plt.legend()
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    plt.legend(fontsize = 18)
     plt.show()
 
 #Tests for 10 points :D
@@ -168,8 +175,8 @@ def perturbations_in_A(n,eps,params: tuple):
         for p in perturbations:
             a_p1 = perturb_matrix_random(a1,p)
             a_p2 = perturb_matrix_random(a2,p)
-            data1.append(INVIT_demo(a_p1,eps))
-            data2.append(INVIT_demo(a_p2,eps))
+            data1.append(INVIT_demo(a_p1,eps*1e-3))
+            data2.append(INVIT_demo(a_p2,eps*1e-3))
         for i in data1:
             l = i[0]
             err = abs(l - 1)
@@ -181,21 +188,54 @@ def perturbations_in_A(n,eps,params: tuple):
         plt.plot(perturbations,errors1,'-o', label = f'Experimental data: $\mu_1 \\approx$ {round(mu1,0)}')
         plt.plot(perturbations,errors2,'-*', label = f'Experimental data: $\mu_1 =$ {mu2}')
         plt.plot(perturbations,mu1*perturbations,linestyle = 'dashed',label = f'Theoretical bound for $\mu_1 \\approx$ {round(mu1,0)} ')
-
+        # plt.plot(perturbations,mu2*perturbations,linestyle = 'dashed',label = f'Theoretical bound for $\mu_1 \\approx$ {round(mu2,0)} ')
     else:
         raise ValueError('Enter only supported plot types: either vector or value')
     
     plt.loglog()
-    plt.ylabel('Error')
-    plt.xlabel('Perturbations')
+    plt.ylabel('Error',fontsize = 20)
+    plt.xlabel('Perturbations',fontsize = 20)
     plt.grid()
-    plt.legend()
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    plt.legend(fontsize = 18)
     plt.show()
 
 
 # accuracy(10)
 # convegrence(10,1e-3,1,eps=1e-14)
 # iterations_dist(10,1e-6)
-perturbations_in_A(10,1e-6,('vector',1e-4,1))
+# perturbations_in_A(10,1e-7,('value',1e-2,1))
+
+def accuracy_dim(eps):
+    dims = [i for i in range(1,17)]
+    errors = []
+    lambdass =[0]*dim
+    for dim in dims:
+        spectrum = np.linspace(1,dim,dim)
+        print('Exact\n',spectrum)
+        a = matr_spectrum(spectrum)
+        for i in range(10):
+            lambdas = get_spectrum(a,eps)
+            lambdass[i] = lambdas
+        for i in lambdass:
+            lambdass
+        print('Numerical\n',lambdas)
+        err = spectrum[0] - lambdas[0]
+        error = np.mean(err)
+        print(err)
+        errors.append(error)
+    plt.plot(dims,errors)
+    plt.xlabel('dim',fontsize = 20)
+    plt.ylabel('Error',fontsize = 20)
+    plt.semilogy()
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    plt.ylim(1e-16)
+    plt.show()
 
 
+# accuracy(10)
+# convegrence(10,1e-3,1)
+# iterations_dist(10,1e-6)
+perturbations_in_A(10,1e-10,('vector',1e-4,1))
