@@ -39,18 +39,23 @@ def Leverier(A):
     return np.concatenate((first, p))
 def bisection_method(interval:tuple,eps,f,max_iter= 1000):
         a,b = interval[0],interval[1]
-        c = (a+b)/2
-        i = 0
-        while abs(b-a)>2*eps and i < max_iter:
-            i += 1
+        if f(a) < 1e-12:
+            return a
+        elif f(b) < 1e-12:
+            return b
+        else:    
             c = (a+b)/2
-            if f(a)*f(c)<0:
-                b = c
-            elif f(c) == 0:
-                break
-            else:
-                a = c
-        return float((a+b)/2)
+            i = 0
+            while abs(b-a)>2*eps and i < max_iter:
+                i += 1
+                c = (a+b)/2
+                if f(a)*f(c)<0:
+                    b = c
+                elif f(c) == 0:
+                    break
+                else:
+                    a = c
+            return float((a+b)/2)
 
 
 def get_derivative_coefs(coefs):
