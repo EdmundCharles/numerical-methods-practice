@@ -191,7 +191,7 @@ def plot_stability_side_by_side(f, a, b, xc, n, alpha, epsilon=1e-3):
     ax1.plot(x_plot, f_val, 'k--', linewidth=1.5, alpha=0.6, label='f(x)')
     ax1.plot(x_plot, p_clean, 'b-', linewidth=1.5, label='$L_{clean}$')
     ax1.scatter(x_nodes, y_clean, color='blue', s=20, zorder=5, edgecolors='black', label='Nodes')
-    ax1.plot(x_plot, p_noisy, 'r-', linewidth=1, alpha=0.8, label='$L_{noisy}$')
+    ax1.plot(x_plot, p_noisy, 'r-', linewidth=1, alpha=0.8, label='$L_{perturbed}$')
     
     # Ограничим Y, если полином улетает в космос (для читаемости)
     limit = max(np.max(np.abs(f_val)), np.max(np.abs(p_clean))) 
@@ -206,7 +206,7 @@ def plot_stability_side_by_side(f, a, b, xc, n, alpha, epsilon=1e-3):
 
     # --- ПРАВЫЙ ГРАФИК: Ошибка (Разница) ---
     ax2 = axs[1]
-    ax2.plot(x_plot, difference, 'r-', label='$|L_{clean} - L_{noisy}|$')
+    ax2.plot(x_plot, difference, 'r-', label='$|L_{clean} - L_{perturbed}|$')
     # Уровень шума для сравнения
     ax2.axhline(y=epsilon, color='b', linestyle='--', label='Noise Level')
     
@@ -221,7 +221,7 @@ def plot_stability_side_by_side(f, a, b, xc, n, alpha, epsilon=1e-3):
 
 # --- ПРИМЕР ЗАПУСКА ---
 # g = lambda x: np.abs(x - 4*np.cos(x) + 5)
-# plot_stability_side_by_side(f, -10, 10, -1.8, n=70, alpha=1e-15, epsilon=1e-16)
+plot_stability_side_by_side(f, -10, 10, -1.8, n=25, alpha=1e-15, epsilon=1e-4)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -283,4 +283,4 @@ def plot_epsilon_dependency(f, a, b, xc, ns, alpha, epsilons):
 
 ns_list = [7, 15,25, 40]
 eps = np.logspace(-12,-3,10)
-plot_epsilon_dependency(g, -10, 10, 0, ns_list, alpha=1e-15, epsilons=eps)
+# plot_epsilon_dependency(g, -10, 10, 0, ns_list, alpha=1e-15, epsilons=eps)
