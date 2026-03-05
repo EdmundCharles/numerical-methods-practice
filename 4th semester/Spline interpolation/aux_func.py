@@ -1,4 +1,49 @@
 import numpy as np
+def get_x_grid(a, b, xc, N, alpha=1.0):
+    """
+    Генерирует гладкую сетку с использованием жуткого арктангенса.
+    
+    Параметры:
+    alpha : коэффициент сгущения. 
+            0 -> равномерная сетка (в пределе)
+            > 0 -> сгущение к xc
+            Чем больше alpha, тем сильнее концентрация.
+    """
+    y_min = np.arctan(alpha * (a - xc))
+    y_max = np.arctan(alpha * (b - xc))
+    
+    y_uniform = np.linspace(y_min, y_max, N)
+    
+    x_grid = xc + np.tan(y_uniform) / alpha
+    
+    return x_grid
+
+def table_function(f,a,b,xc,n,alpha = 0.1):
+    x_h = get_x_grid(a,b,xc,n,alpha)
+    y_h = f(x_h)
+    return x_h,y_h
+
+
+
+def Lagrange(x_nodes: list,y_nodes: list,x):
+    n = len(x_nodes)
+    def get_phi_x(i,x_nodes,x):
+        numerator = 1
+        denominator = 1
+        for k in range(n):    
+            if k != i: 
+                numerator *= x - x_nodes[k]
+                denominator *= x_nodes[i] - x_nodes[k]
+        phix = numerator/denominator
+        return phix
+    phis = np.array([get_phi_x(i,x_nodes,x) for i in range(n)])
+
+    return np.dot(y_nodes,phis)
+
+
+
+
+
 
 def thomas_for_spline(x, y,sda = 1,sdb = 1):
     n = len(x)

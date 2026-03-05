@@ -4,7 +4,6 @@ from aux import table_function
 from Lagrange import Lagrange
 
 f = lambda x: x - 4*np.cos(x) + 5 
-# f = lambda x: np.abs(x - np.cos(x) + 3 )
 g = lambda x: np.abs(f(x))
 
 
@@ -205,23 +204,3 @@ def plot_1(f,a,b,xc,ns: list,alpha=1e-15):
 
         
         plt.show()
-
-a,b = -10,10
-xc, al = -4.76994 , 0.05
-
-n_list = [15]
-
-# plot_1(f, a, b, 0, n_list, al)
-
-# plot_2(f, a, b, 0, n_list, al)
-
-# plot_3(f, a,b, xc,3,70, al)
-
-# plot_alphas(g,a,b,xc,25,[0.06,0.064,0.067, 0.07])
-plot_1(g,a,b,xc,[25],al)
-
-# plot_1(g, a, b, xc, n_list, al)
-
-# plot_2(g, a, b, xc, n_list, al)
-
-# plot_3(g, a,b, xc,3,70, al)

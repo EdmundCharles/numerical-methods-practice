@@ -2,15 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def get_x_grid(a, b, xc, N, alpha=1.0):
-    """
-    Генерирует гладкую сетку с использованием жуткого арктангенса.
-    
-    Параметры:
-    alpha : коэффициент сгущения. 
-            0 -> равномерная сетка (в пределе)
-            > 0 -> сгущение к xc
-            Чем больше alpha, тем сильнее концентрация.
-    """
+
     y_min = np.arctan(alpha * (a - xc))
     y_max = np.arctan(alpha * (b - xc))
     
